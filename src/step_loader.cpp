@@ -29,6 +29,9 @@
 
 #include <TCollection_AsciiString.hxx>
 
+#include <STEPControl_Reader.hxx>
+#include <Interface_Static.hxx>
+
 bool xrobot::StepLoader::Load(const char *filename, xrobot::Model& model)
 {
     std::cout
@@ -53,8 +56,23 @@ bool xrobot::StepLoader::Load(const char *filename, xrobot::Model& model)
 
     STEPCAFControl_Reader reader;
 
-    IFSelect_ReturnStatus status =
-        reader.ReadFile(filename);
+    IFSelect_ReturnStatus status = reader.ReadFile(filename);
+
+    std::cout
+    << "STEP units: "
+    << Interface_Static::CVal("xstep.cascade.unit")
+    << std::endl;
+
+    std::unordered_map<std::string, double> unitScale =
+    {
+        {"MM", 0.001},
+        {"CM", 0.01},
+        {"M", 1.0},
+        {"IN", 0.0254},
+        {"FT", 0.3048}
+    };
+
+    double scale = unitScale[Interface_Static::CVal("xstep.cascade.unit")];
 
     if (status != IFSelect_RetDone)
     {
@@ -151,9 +169,9 @@ bool xrobot::StepLoader::Load(const char *filename, xrobot::Model& model)
                             gp_XYZ translation = transform.TranslationPart();
                             gp_Quaternion rotation = transform.GetRotation();
 
-                            part->initialPx = translation.X();
-                            part->initialPy = translation.Y();
-                            part->initialPz = translation.Z();
+                            part->initialPx = translation.X()*scale;
+                            part->initialPy = translation.Y()*scale;
+                            part->initialPz = translation.Z()*scale;
 
                             part->initialQx = rotation.X();
                             part->initialQy = rotation.Y();
