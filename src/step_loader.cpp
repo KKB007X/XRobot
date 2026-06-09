@@ -74,6 +74,9 @@ bool xrobot::StepLoader::Load(const char *filename, xrobot::Model& model)
         return false;
     }
 
+    StlAPI_Writer writer;
+    std::filesystem::create_directories("meshes");
+
     Handle(XCAFDoc_ShapeTool) shapeTool = XCAFDoc_DocumentTool::ShapeTool(doc->Main());
 
     TDF_LabelSequence labels;
@@ -111,7 +114,6 @@ bool xrobot::StepLoader::Load(const char *filename, xrobot::Model& model)
                 << components.Length()
                 << std::endl;
             
-            StlAPI_Writer writer;std::filesystem::create_directories("meshes");
 
             for (Standard_Integer j = 1;
                 j <= components.Length();
@@ -135,8 +137,12 @@ bool xrobot::StepLoader::Load(const char *filename, xrobot::Model& model)
                             << "  "
                             << partName;
                         xrobot::Part* part = model.FindPart(partName);
+
                         if (!part){
                             std::cout << " : no matches found" << std::endl;
+                        }
+                        else{
+                            std::cout << " : match found" << std::endl;
 
                             TopoDS_Shape shape = shapeTool->GetShape(component);
                             TopLoc_Location location = shape.Location();
@@ -145,19 +151,14 @@ bool xrobot::StepLoader::Load(const char *filename, xrobot::Model& model)
                             gp_XYZ translation = transform.TranslationPart();
                             gp_Quaternion rotation = transform.GetRotation();
 
-                            std::cout
-                                << "Position: "
-                                << translation.X() << " "
-                                << translation.Y() << " "
-                                << translation.Z()
-                                << std::endl;
-                            std::cout
-                                << "Rotation: "
-                                << rotation.X() << " "
-                                << rotation.Y() << " "
-                                << rotation.Z() << " "
-                                << rotation.W()
-                                << std::endl;
+                            part->initialPx = translation.X();
+                            part->initialPy = translation.Y();
+                            part->initialPz = translation.Z();
+
+                            part->initialQx = rotation.X();
+                            part->initialQy = rotation.Y();
+                            part->initialQz = rotation.Z();
+                            part->initialQw = rotation.W();
                             
                             BRepMesh_IncrementalMesh mesh(shape, model.resolution);
 
@@ -165,10 +166,7 @@ bool xrobot::StepLoader::Load(const char *filename, xrobot::Model& model)
 
                             writer.Write(shape, stlPath.c_str());
                             
-                            std::cout << stlPath << std::endl;
-                        }
-                        else{
-                            std::cout << " : match found" << std::endl;
+                            part->stlPath = stlPath;
                         }
                         
                     }
