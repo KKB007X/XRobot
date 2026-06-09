@@ -20,5 +20,16 @@ public:
     double iyz;
 
     double izz;
+
+    std::string stlPath;
+
+    double initialPx;
+    double initialPy;
+    double initialPz;
+
+    double initialQx;
+    double initialQy;
+    double initialQz;
+    double initialQw;
 };
 }
