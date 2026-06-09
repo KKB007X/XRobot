@@ -16,6 +16,15 @@
 #include <TDF_LabelSequence.hxx>
 #include <TDataStd_Name.hxx>
 
+#include <TopoDS_Shape.hxx>
+#include <TopLoc_Location.hxx>
+#include <gp_Trsf.hxx>
+#include <gp_XYZ.hxx>
+#include <gp_Quaternion.hxx>
+
+#include <BRepMesh_IncrementalMesh.hxx>
+#include <StlAPI_Writer.hxx>
+
 #include <string>
 
 #include <TCollection_AsciiString.hxx>
@@ -101,6 +110,8 @@ bool xrobot::StepLoader::Load(const char *filename, xrobot::Model& model)
                 << "Components: "
                 << components.Length()
                 << std::endl;
+            
+            StlAPI_Writer writer;std::filesystem::create_directories("meshes");
 
             for (Standard_Integer j = 1;
                 j <= components.Length();
@@ -111,9 +122,7 @@ bool xrobot::StepLoader::Load(const char *filename, xrobot::Model& model)
                 TDF_Label referredShape;
 
                 if (
-                    shapeTool->GetReferredShape(
-                        component,
-                        referredShape))
+                    shapeTool->GetReferredShape(component, referredShape))
                 {
                     Handle(TDataStd_Name) shapeName;
 
@@ -128,6 +137,35 @@ bool xrobot::StepLoader::Load(const char *filename, xrobot::Model& model)
                         xrobot::Part* part = model.FindPart(partName);
                         if (!part){
                             std::cout << " : no matches found" << std::endl;
+
+                            TopoDS_Shape shape = shapeTool->GetShape(component);
+                            TopLoc_Location location = shape.Location();
+                            gp_Trsf transform = location.Transformation();
+
+                            gp_XYZ translation = transform.TranslationPart();
+                            gp_Quaternion rotation = transform.GetRotation();
+
+                            std::cout
+                                << "Position: "
+                                << translation.X() << " "
+                                << translation.Y() << " "
+                                << translation.Z()
+                                << std::endl;
+                            std::cout
+                                << "Rotation: "
+                                << rotation.X() << " "
+                                << rotation.Y() << " "
+                                << rotation.Z() << " "
+                                << rotation.W()
+                                << std::endl;
+                            
+                            BRepMesh_IncrementalMesh mesh(shape, model.resolution);
+
+                            std::string stlPath ="meshes/" + partName + ".stl";
+
+                            writer.Write(shape, stlPath.c_str());
+                            
+                            std::cout << stlPath << std::endl;
                         }
                         else{
                             std::cout << " : match found" << std::endl;

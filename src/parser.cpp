@@ -78,8 +78,11 @@ bool xrobot::Parser::Load(const char *filename, Model& model)
         return false;
     }
 
+    double resolution = geometry->DoubleAttribute("resolution", 0.1);
+
     model.geometryType = type;
     model.geometryPath = path;
+    model.resolution = resolution;
 
     std::cout
         << "Geometry Type: "

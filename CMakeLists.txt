@@ -28,10 +28,19 @@ target_link_libraries(
     TKSTEPBase
     TKSTEPAttr
     TKXSBase
+
     TKernel
 
     TKCAF
     TKLCAF
     TKXCAF
     TKXDESTEP
+
+    TKMath
+    TKBRep
+    TKG3d
+    TKG2d
+
+    TKMesh
+    TKSTL
 )
