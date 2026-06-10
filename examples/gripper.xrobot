@@ -1,10 +1,35 @@
 <xrobot version="0.1">
 
-    <geometry type="step" path="../examples/Simple_model.step"/>
+    <geometry type="step" path="../examples/simple_model.step"/>
 
-    <part name="R14"/>
+    <part name="Base_link"
+    mass="1.0"
 
-    <part name="R23"/>
+    ixx="0.01"
+    ixy="0"
+    ixz="0"
+
+    iyy="0.01"
+    iyz="0"
+
+    izz="0.01"
+    rgba="1.0 0.0 0.0 1.0">
+
+    </part>
+
+    <part name="Part2"
+    mass="1.0"
+
+    ixx="0.01"
+    ixy="0"
+    ixz="0"
+
+    iyy="0.01"
+    iyz="0"
+
+    izz="0.01">
+
+    </part>
 
     <joint
         name="jR23"

@@ -23,6 +23,8 @@ public:
 
     std::string stlPath;
 
+    std::string rgba = "0.7 0.7 0.7 1.0";
+
     double initialPx;
     double initialPy;
     double initialPz;
@@ -31,5 +33,9 @@ public:
     double initialQy;
     double initialQz;
     double initialQw;
+
+    double initialRoll;
+    double initialPitch;
+    double initialYaw;
 };
 }

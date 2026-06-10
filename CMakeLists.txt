@@ -10,6 +10,9 @@ include_directories(
 )
 
 find_package(tinyxml2 REQUIRED)
+find_package(gz-sim8 REQUIRED)
+find_package(gz-transport13 REQUIRED)
+find_package(gz-msgs10 REQUIRED)
 
 add_executable(
     xrobot
@@ -43,4 +46,8 @@ target_link_libraries(
 
     TKMesh
     TKSTL
+
+    gz-sim8::gz-sim8
+    gz-transport13::gz-transport13
+    gz-msgs10::gz-msgs10
 )

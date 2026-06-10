@@ -72,7 +72,17 @@ bool xrobot::StepLoader::Load(const char *filename, xrobot::Model& model)
         {"FT", 0.3048}
     };
 
-    double scale = unitScale[Interface_Static::CVal("xstep.cascade.unit")];
+    std::string unit = Interface_Static::CVal("xstep.cascade.unit");
+
+    double scale = 1.0;
+    auto it = unitScale.find(unit);
+
+    if (it != unitScale.end())
+    {
+        scale = it->second;
+    }
+
+    model.scale = scale;
 
     if (status != IFSelect_RetDone)
     {
@@ -100,6 +110,12 @@ bool xrobot::StepLoader::Load(const char *filename, xrobot::Model& model)
     TDF_LabelSequence labels;
 
     shapeTool->GetFreeShapes(labels);
+
+    gp_Trsf baseTransform;
+    std::cout
+    << baseTransform.Form()
+    << std::endl;
+    bool foundBase = false;
 
     std::cout
         << "Top level shapes: "
@@ -132,7 +148,61 @@ bool xrobot::StepLoader::Load(const char *filename, xrobot::Model& model)
                 << components.Length()
                 << std::endl;
             
+            for (Standard_Integer j = 1;
+                j <= components.Length();
+                j++)
+            {
+                TDF_Label component =
+                    components.Value(j);
 
+                TDF_Label referredShape;
+
+                if (!shapeTool->GetReferredShape(
+                        component,
+                        referredShape))
+                {
+                    continue;
+                }
+
+                Handle(TDataStd_Name) shapeName;
+
+                if (!referredShape.FindAttribute(
+                        TDataStd_Name::GetID(),
+                        shapeName))
+                {
+                    continue;
+                }
+
+                TCollection_AsciiString asciiName(
+                    shapeName->Get());
+
+                std::string partName =
+                    asciiName.ToCString();
+
+                if (partName == "Base_link")
+                {
+                    TopoDS_Shape shape =
+                        shapeTool->GetShape(component);
+
+                    baseTransform =
+                        shape.Location().Transformation();
+
+                    foundBase = true;
+
+                    std::cout
+                        << "Found base link: "
+                        << partName
+                        << std::endl;
+
+                    break;
+                }
+            }
+            if (!foundBase)
+            {
+                std::cout
+                    << "Base link not found in STEP"
+                    << std::endl;
+            }
             for (Standard_Integer j = 1;
                 j <= components.Length();
                 j++)
@@ -163,8 +233,13 @@ bool xrobot::StepLoader::Load(const char *filename, xrobot::Model& model)
                             std::cout << " : match found" << std::endl;
 
                             TopoDS_Shape shape = shapeTool->GetShape(component);
+
+                            TopoDS_Shape localShape = shape.Located(TopLoc_Location());
+
                             TopLoc_Location location = shape.Location();
-                            gp_Trsf transform = location.Transformation();
+                            gp_Trsf worldTransform = location.Transformation();
+
+                            gp_Trsf transform = baseTransform.Inverted() * worldTransform;
 
                             gp_XYZ translation = transform.TranslationPart();
                             gp_Quaternion rotation = transform.GetRotation();
@@ -177,12 +252,24 @@ bool xrobot::StepLoader::Load(const char *filename, xrobot::Model& model)
                             part->initialQy = rotation.Y();
                             part->initialQz = rotation.Z();
                             part->initialQw = rotation.W();
+
+                            gp_EulerSequence seq = gp_Extrinsic_XYZ;
+
+                            Standard_Real roll;
+                            Standard_Real pitch;
+                            Standard_Real yaw;
+
+                            rotation.GetEulerAngles(seq, roll, pitch, yaw);
+
+                            part->initialRoll = roll;
+                            part->initialPitch = pitch;
+                            part->initialYaw = yaw;
                             
-                            BRepMesh_IncrementalMesh mesh(shape, model.resolution);
+                            BRepMesh_IncrementalMesh mesh(localShape, model.resolution);
 
                             std::string stlPath ="meshes/" + partName + ".stl";
 
-                            writer.Write(shape, stlPath.c_str());
+                            writer.Write(localShape, stlPath.c_str());
                             
                             part->stlPath = stlPath;
                         }

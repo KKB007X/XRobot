@@ -17,6 +17,7 @@ public:
     std::string geometryType;
     std::string geometryPath;
     double resolution;
+    double scale;
 
     std::vector<
         std::unique_ptr<Part>

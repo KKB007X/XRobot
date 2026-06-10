@@ -128,6 +128,11 @@ bool xrobot::Parser::Load(const char *filename, Model& model)
 
         newPart->izz = part->DoubleAttribute("izz", 0.0);
 
+        auto rgba = part->Attribute("rgba");
+        if (rgba){
+            newPart->rgba = rgba;
+        }
+
         std::cout
             << "Added part: "
             << name
