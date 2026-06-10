@@ -14,11 +14,20 @@ bool xrobot::Parser::Load(const char *filename, Model& model)
     tinyxml2::XMLDocument doc;
 
     auto result = doc.LoadFile(filename);
+    std::cout
+        << "Loading: "
+        << filename
+        << std::endl;
 
     if (result != tinyxml2::XML_SUCCESS)
     {
         std::cout
-            << "Failed to load file"
+            << "Failed to load Xrobot file"
+            << std::endl;
+
+        std::cout
+            << "Error code: "
+            << result
             << std::endl;
 
         return false;
@@ -128,6 +137,12 @@ bool xrobot::Parser::Load(const char *filename, Model& model)
 
         newPart->izz = part->DoubleAttribute("izz", 0.0);
 
+        newPart->density = part->DoubleAttribute("density", 0.0);
+
+        // newPart->comX = part->DoubleAttribute("comX", 0.0);
+        // newPart->comY = part->DoubleAttribute("comY", 0.0);
+        // newPart->comZ = part->DoubleAttribute("comZ", 0.0);
+
         auto rgba = part->Attribute("rgba");
         if (rgba){
             newPart->rgba = rgba;
@@ -166,9 +181,7 @@ bool xrobot::Parser::Load(const char *filename, Model& model)
             << name
             << std::endl;
 
-        model.AddJoint(
-            std::move(
-                newJoint));
+        model.AddJoint(std::move(newJoint));
     }
 
     xrobot::StepLoader stepLoader;

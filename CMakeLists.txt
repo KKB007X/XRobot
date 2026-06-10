@@ -47,6 +47,8 @@ target_link_libraries(
     TKMesh
     TKSTL
 
+    TKTopAlgo
+
     gz-sim8::gz-sim8
     gz-transport13::gz-transport13
     gz-msgs10::gz-msgs10

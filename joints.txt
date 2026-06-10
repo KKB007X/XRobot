@@ -1,0 +1,21 @@
+fixed        -> 0 DOF
+
+revolute     -> 1 rotational DOF (limited)
+
+continuous   -> 1 rotational DOF (unlimited)
+
+prismatic    -> 1 translational DOF
+
+screw        -> 1 DOF
+                translation coupled to rotation
+
+cylindrical  -> 2 DOF
+                rotation + translation along same axis
+
+planar       -> 3 DOF
+                x, y, yaw
+
+ball         -> 3 rotational DOF
+
+universal    -> 2 rotational DOF
+                two perpendicular axes

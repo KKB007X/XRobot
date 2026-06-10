@@ -21,6 +21,12 @@ public:
 
     double izz;
 
+    double density;
+
+    double comX = 0.0;
+    double comY = 0.0;
+    double comZ = 0.0;
+
     std::string stlPath;
 
     std::string rgba = "0.7 0.7 0.7 1.0";

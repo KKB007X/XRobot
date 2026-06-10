@@ -32,6 +32,11 @@
 #include <STEPControl_Reader.hxx>
 #include <Interface_Static.hxx>
 
+
+#include <BRepGProp.hxx>
+#include <GProp_GProps.hxx>
+#include <gp_Mat.hxx>
+
 bool xrobot::StepLoader::Load(const char *filename, xrobot::Model& model)
 {
     std::cout
@@ -272,6 +277,70 @@ bool xrobot::StepLoader::Load(const char *filename, xrobot::Model& model)
                             writer.Write(localShape, stlPath.c_str());
                             
                             part->stlPath = stlPath;
+
+                            bool hasMass = part->mass > 0.0;
+
+                            bool hasInertia =
+                                part->ixx != 0.0 ||
+                                part->ixy != 0.0 ||
+                                part->ixz != 0.0 ||
+                                part->iyy != 0.0 ||
+                                part->iyz != 0.0 ||
+                                part->izz != 0.0;
+
+                            bool hasDensity = part->density > 0.0;
+
+                            if (hasMass && hasInertia)
+                            {
+                                // User supplied everything
+                            }
+                            else if (hasMass || hasDensity)
+                            {
+                                GProp_GProps props;
+
+                                BRepGProp::VolumeProperties(localShape, props);
+
+                                double volume = props.Mass();
+                                double density;
+
+                                if (hasDensity)
+                                {
+                                    density = part->density;
+                                    part->mass = density * volume;
+                                }
+                                else
+                                {
+                                    density = part->mass / volume;
+                                }
+                                std::cout
+                                    << "Volume: "
+                                    << volume
+                                    << std::endl;
+
+                                gp_Pnt com = props.CentreOfMass();
+
+                                part->comX = com.X() * scale;
+                                part->comY = com.Y() * scale;
+                                part->comZ = com.Z() * scale;
+
+                                gp_Mat inertia = props.MatrixOfInertia();
+                                part->ixx = inertia.Value(1,1) * density;
+                                part->ixy = inertia.Value(1,2) * density;
+                                part->ixz = inertia.Value(1,3) * density;
+                                part->iyy = inertia.Value(2,2) * density;
+                                part->iyz = inertia.Value(2,3) * density;
+                                part->izz = inertia.Value(3,3) * density;
+                            }
+                            else
+                            {
+                                std::cout
+                                    << "Part "
+                                    << part->name
+                                    << " missing density or mass"
+                                    << std::endl;
+                            }
+
+                            //here will be the if loops
                         }
                         
                     }

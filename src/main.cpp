@@ -78,6 +78,13 @@ bool Spawn(xrobot::Model& model)
 
         sdf << "<inertial>";
 
+        sdf << "<pose>"
+            << part.comX << " "
+            << part.comY << " "
+            << part.comZ << " "
+            << "0 0 0"
+            << "</pose>";
+
         sdf << "<mass>"
             << part.mass
             << "</mass>";
@@ -101,6 +108,8 @@ bool Spawn(xrobot::Model& model)
     }
     sdf << "</model>";
     sdf << "</sdf>";
+
+    std::cout << sdf.str();
 
     gz::msgs::EntityFactory req;
     req.set_sdf(sdf.str());

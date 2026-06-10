@@ -4,15 +4,8 @@
 
     <part name="Base_link"
     mass="1.0"
+    density="2700"
 
-    ixx="0.01"
-    ixy="0"
-    ixz="0"
-
-    iyy="0.01"
-    iyz="0"
-
-    izz="0.01"
     rgba="1.0 0.0 0.0 1.0">
 
     </part>
@@ -20,14 +13,7 @@
     <part name="Part2"
     mass="1.0"
 
-    ixx="0.01"
-    ixy="0"
-    ixz="0"
-
-    iyy="0.01"
-    iyz="0"
-
-    izz="0.01">
+    density="2700"
 
     </part>
 
