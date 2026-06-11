@@ -8,6 +8,6 @@ class StepLoader
 {
 public:
 
-    bool Load(const char *filename, Model& model);
+    bool Load(Model& model);
 };
 }

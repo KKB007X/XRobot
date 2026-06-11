@@ -1,134 +1,24 @@
 #include "xrobot/parser.hpp"
 #include "xrobot/step_loader.hpp"
+#include "xrobot/gz_spawner.hpp"
+
 #include "xrobot/model.hpp"
+
 #include <iostream>
 #include <string>
 #include <sstream>
-#include <filesystem>
 
-#include <gz/transport/Node.hh>
-#include <gz/msgs/entity_factory.pb.h>
-#include <gz/msgs/boolean.pb.h>
 
-bool Spawn(xrobot::Model& model)
-{
-    gz::transport::Node node;
-    std::vector<std::string> services;
-    node.ServiceList(services);
-
-    std::string world;
-    for (const auto& service : services)
-    {
-        if (service.find("/world/") == 0 && service.find("/create") != std::string::npos)
-        {
-            world = service;
-            break;
-        }
-    }
-
-    std::stringstream sdf;
-
-    sdf << "<sdf version='1.10'>";
-    sdf << "<model name='xrobot'>";
-    for (auto& partPtr : model.parts)
-    {
-        auto& part = *partPtr;
-
-        sdf << "<link name='" << part.name << "'>";
-
-        sdf << "<pose>"
-            << part.initialPx << " "
-            << part.initialPy << " "
-            << part.initialPz << " "
-            << part.initialRoll << " "
-            << part.initialPitch << " "
-            << part.initialYaw << " "
-            << "</pose>";
-
-        sdf << "<visual name='visual'>";
-
-        sdf << "<geometry>";
-        sdf << "<mesh>";
-        sdf << "<uri>file://"
-            << std::filesystem::absolute(part.stlPath).string()
-            << "</uri>";
-        sdf << "<scale> " << model.scale <<" "<< model.scale <<" "<< model.scale <<" </scale>";
-        sdf << "</mesh>";
-        sdf << "</geometry>";
-        sdf << "<material>"
-            << "<ambient>" << part.rgba << "</ambient>"
-            << "<diffuse>" << part.rgba << "</diffuse>"
-            << "<specular>0.2 0.2 0.2 1</specular>"
-            << "</material>";
-
-        sdf << "</visual>";
-
-        sdf << "<collision name='visual'>";
-
-        sdf << "<geometry>";
-        sdf << "<mesh>";
-        sdf << "<uri>file://"
-            << std::filesystem::absolute(part.stlPath).string()
-            << "</uri>";
-        sdf << "<scale> " << model.scale <<" "<< model.scale <<" "<< model.scale <<" </scale>";
-        sdf << "</mesh>";
-        sdf << "</geometry>";
-
-        sdf << "</collision>";
-
-        sdf << "<inertial>";
-
-        sdf << "<pose>"
-            << part.comX << " "
-            << part.comY << " "
-            << part.comZ << " "
-            << "0 0 0"
-            << "</pose>";
-
-        sdf << "<mass>"
-            << part.mass
-            << "</mass>";
-
-        sdf << "<inertia>";
-
-        sdf << "<ixx>" << part.ixx << "</ixx>";
-        sdf << "<ixy>" << part.ixy << "</ixy>";
-        sdf << "<ixz>" << part.ixz << "</ixz>";
-
-        sdf << "<iyy>" << part.iyy << "</iyy>";
-        sdf << "<iyz>" << part.iyz << "</iyz>";
-
-        sdf << "<izz>" << part.izz << "</izz>";
-
-        sdf << "</inertia>";
-
-        sdf << "</inertial>";
-
-        sdf << "</link>";
-    }
-    sdf << "</model>";
-    sdf << "</sdf>";
-
-    std::cout << sdf.str();
-
-    gz::msgs::EntityFactory req;
-    req.set_sdf(sdf.str());
-
-    gz::msgs::Boolean rep;
-    bool result;
-
-    bool executed = node.Request(world, req, 5000, rep, result);
-
-    return executed && result;
-}
 
 int main()
 {
     xrobot::Parser parser;
+    xrobot::StepLoader step_loader;
+    xrobot::gzSpawner gz_spawner;
     xrobot::Model model;
+    bool success;
 
-    bool success =
-        parser.Load("../examples/gripper.xrobot", model);
+    success = parser.Load("../examples/gripper.xrobot", model);
 
     if (success)
     {
@@ -143,7 +33,25 @@ int main()
             << std::endl;
     }
 
-    if (Spawn(model))
+    success = step_loader.Load(model);
+
+    if (success)
+    {
+        std::cout
+            << "step file loaded"
+            << std::endl;
+    }
+    else
+    {
+        std::cout
+            << "Failed to load step file"
+            << std::endl;
+    }
+
+    xrobot::SpawnOptions options;
+    success = gz_spawner.PauseWorld() && gz_spawner.Spawn(model, options);
+
+    if (success)
     {
         std::cout
             << "Spawn successful"

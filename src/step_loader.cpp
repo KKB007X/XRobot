@@ -37,8 +37,9 @@
 #include <GProp_GProps.hxx>
 #include <gp_Mat.hxx>
 
-bool xrobot::StepLoader::Load(const char *filename, xrobot::Model& model)
+bool xrobot::StepLoader::Load(xrobot::Model& model)
 {
+    const char *filename = model.geometryPath.c_str();
     std::cout
         << "Loading STEP: "
         << filename
@@ -300,7 +301,7 @@ bool xrobot::StepLoader::Load(const char *filename, xrobot::Model& model)
 
                                 BRepGProp::VolumeProperties(localShape, props);
 
-                                double volume = props.Mass();
+                                double volume = props.Mass()*scale*scale*scale;
                                 double density;
 
                                 if (hasDensity)
@@ -324,12 +325,12 @@ bool xrobot::StepLoader::Load(const char *filename, xrobot::Model& model)
                                 part->comZ = com.Z() * scale;
 
                                 gp_Mat inertia = props.MatrixOfInertia();
-                                part->ixx = inertia.Value(1,1) * density;
-                                part->ixy = inertia.Value(1,2) * density;
-                                part->ixz = inertia.Value(1,3) * density;
-                                part->iyy = inertia.Value(2,2) * density;
-                                part->iyz = inertia.Value(2,3) * density;
-                                part->izz = inertia.Value(3,3) * density;
+                                part->ixx = inertia.Value(1,1) * density *scale * scale * scale * scale * scale;
+                                part->ixy = inertia.Value(1,2) * density *scale * scale * scale * scale * scale;
+                                part->ixz = inertia.Value(1,3) * density *scale * scale * scale * scale * scale;
+                                part->iyy = inertia.Value(2,2) * density *scale * scale * scale * scale * scale;
+                                part->iyz = inertia.Value(2,3) * density *scale * scale * scale * scale * scale;
+                                part->izz = inertia.Value(3,3) * density *scale * scale * scale * scale * scale;
                             }
                             else
                             {

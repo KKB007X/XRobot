@@ -13,7 +13,7 @@
     <part name="Part2"
     mass="1.0"
 
-    density="2700"
+    density="2700">
 
     </part>
 

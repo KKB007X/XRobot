@@ -20,6 +20,7 @@ add_executable(
     src/parser.cpp
     src/step_loader.cpp
     src/model.cpp
+    src/gz_spawner.cpp
 )
 
 target_link_libraries(

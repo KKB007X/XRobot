@@ -2,7 +2,6 @@
 #include "xrobot/model.hpp"
 #include "xrobot/part.hpp"
 #include "xrobot/joint.hpp"
-#include "xrobot/step_loader.hpp"
 
 #include <iostream>
 #include <memory>
@@ -28,6 +27,11 @@ bool xrobot::Parser::Load(const char *filename, Model& model)
         std::cout
             << "Error code: "
             << result
+            << std::endl;
+
+        std::cout
+            << "Error string: "
+            << doc.ErrorStr()
             << std::endl;
 
         return false;
@@ -184,12 +188,6 @@ bool xrobot::Parser::Load(const char *filename, Model& model)
         model.AddJoint(std::move(newJoint));
     }
 
-    xrobot::StepLoader stepLoader;
-
-    if (!stepLoader.Load(path, model))
-    {
-        return false;
-    }
 
     return true;
 
