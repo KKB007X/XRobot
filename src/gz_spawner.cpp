@@ -83,7 +83,7 @@ bool xrobot::gzSpawner::ResumeWorld(std::string world)
     return executed && result;
 }
 
-bool xrobot::gzSpawner::Spawn(xrobot::Model& model, const SpawnOptions& options)
+bool xrobot::gzSpawner::Spawn(xrobot::Model& model, const char *filename, const SpawnOptions& options)
 {
     gz::transport::Node node;
     
@@ -108,7 +108,7 @@ bool xrobot::gzSpawner::Spawn(xrobot::Model& model, const SpawnOptions& options)
     std::stringstream sdf;
 
     sdf << "<sdf version='1.10'>";
-    sdf << "<model name='xrobot'>";
+    sdf << "<model name='xrobot1'>";
 
     sdf << "<pose>"
         << options.x << " "
@@ -146,9 +146,10 @@ bool xrobot::gzSpawner::Spawn(xrobot::Model& model, const SpawnOptions& options)
         sdf << "<material>"
             << "<ambient>" << part.rgba << "</ambient>"
             << "<diffuse>" << part.rgba << "</diffuse>"
-            << "<specular>0.2 0.2 0.2 1</specular>"
-            << "</material>";
-
+            << "<specular>1 1 1 1</specular>"
+            << "<pbr><metal><roughness>0.4</roughness><metalness>0.5</metalness></metal></pbr>"
+            << "</material>"
+            << "<cast_shadows>true</cast_shadows>";
         sdf << "</visual>";
 
         sdf << "<collision name='collision'>";
@@ -195,6 +196,15 @@ bool xrobot::gzSpawner::Spawn(xrobot::Model& model, const SpawnOptions& options)
         sdf << "</link>";
     }
     sdf << "</model>";
+
+    sdf << "<plugin "
+    << "filename = \"libxrobot_joint_system.so\" "
+    << "name = \"xrobot::JointSystem\">"
+    << "<xrobot_file>"
+    << std::filesystem::absolute(filename).string()
+    << "</xrobot_file>"
+    << "</plugin>";
+
     sdf << "</sdf>";
 
     // std::cout << sdf.str();

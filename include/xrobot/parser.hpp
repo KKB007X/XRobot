@@ -8,7 +8,8 @@ class Parser
 {
 public:
 
-    bool Load(const char *filename, Model& model);
+    bool LoadParts(const char *filename, Model& model);
+    bool LoadJoints(const char *filename, Model& model);
 };
 
 }

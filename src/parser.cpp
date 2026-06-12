@@ -8,7 +8,7 @@
 
 #include <tinyxml2.h>
 
-bool xrobot::Parser::Load(const char *filename, Model& model)
+bool xrobot::Parser::LoadParts(const char *filename, Model& model)
 {
     tinyxml2::XMLDocument doc;
 
@@ -160,6 +160,63 @@ bool xrobot::Parser::Load(const char *filename, Model& model)
         model.AddPart(std::move(newPart));
     }
 
+    return true;
+}
+
+bool xrobot::Parser::LoadJoints(const char *filename, Model& model)
+{
+    tinyxml2::XMLDocument doc;
+
+    auto result = doc.LoadFile(filename);
+    std::cout
+        << "Loading: "
+        << filename
+        << std::endl;
+
+    if (result != tinyxml2::XML_SUCCESS)
+    {
+        std::cout
+            << "Failed to load Xrobot file"
+            << std::endl;
+
+        std::cout
+            << "Error code: "
+            << result
+            << std::endl;
+
+        std::cout
+            << "Error string: "
+            << doc.ErrorStr()
+            << std::endl;
+
+        return false;
+    }
+
+    auto root = doc.FirstChildElement("xrobot");
+
+    if (!root)
+    {
+        std::cout
+            << "No xrobot tag found"
+            << std::endl;
+
+        return false;
+    }
+
+    std::cout
+        << "Found xrobot root"
+        << std::endl;
+
+    const char *version = root->Attribute("version");
+
+    if (version)
+    {
+        std::cout
+            << "Version: "
+            << version
+            << std::endl;
+    }
+
     for (
         auto joint = root->FirstChildElement("joint");
         joint;
@@ -176,9 +233,89 @@ bool xrobot::Parser::Load(const char *filename, Model& model)
             return false;
         }
 
-        auto newJoint = std::make_unique<xrobot::Joint>();
+        auto newJoint =
+            std::make_unique<xrobot::Joint>();
 
         newJoint->name = name;
+
+        const char *type = joint->Attribute("type");
+
+        if (!type)
+        {
+            std::cout
+                << "Joint "
+                << name
+                << " missing type"
+                << std::endl;
+
+            return false;
+        }
+
+        newJoint->type = type;
+
+        const char *parent = joint->Attribute("parent");
+
+        if (!parent)
+        {
+            std::cout
+                << "Joint "
+                << name
+                << " missing parent"
+                << std::endl;
+
+            return false;
+        }
+
+        newJoint->parent = parent;
+
+        const char *child = joint->Attribute("child");
+
+        if (!child)
+        {
+            std::cout
+                << "Joint "
+                << name
+                << " missing child"
+                << std::endl;
+
+            return false;
+        }
+
+        newJoint->child = child;
+
+        auto control = joint->Attribute("control");
+        if (control)
+        {
+            newJoint->control = control;
+        }
+
+        newJoint->ppx = joint->DoubleAttribute("px", 0.0);
+
+        newJoint->ppy = joint->DoubleAttribute("py", 0.0);
+
+        newJoint->ppz = joint->DoubleAttribute("pz", 0.0);
+
+        newJoint->paxisX = joint->DoubleAttribute("axisX", 0.0);
+
+        newJoint->paxisY =  joint->DoubleAttribute("axisY", 0.0);
+
+        newJoint->paxisZ = joint->DoubleAttribute("axisZ", 1.0);
+
+        newJoint->kLinear = joint->DoubleAttribute("kLinear", 10000.0);
+
+        newJoint->kAngular = joint->DoubleAttribute("kAngular", 10000.0);
+
+        newJoint->dLinear = joint->DoubleAttribute("dLinear", 100.0);
+
+        newJoint->dAngular = joint->DoubleAttribute("dAngular", 100.0);
+
+        newJoint->linearTolerance = joint->DoubleAttribute("linearTolerance", 0.0);
+
+        newJoint->angularTolerance = joint->DoubleAttribute("angularTolerance", 0.0);
+
+        newJoint->lowerLimit = joint->DoubleAttribute("lowerLimit", 0.0);
+
+        newJoint->upperLimit = joint->DoubleAttribute("upperLimit", 0.0);
 
         std::cout
             << "Added joint: "
@@ -187,9 +324,6 @@ bool xrobot::Parser::Load(const char *filename, Model& model)
 
         model.AddJoint(std::move(newJoint));
     }
-
-
-    return true;
 
     return true;
 }

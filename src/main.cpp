@@ -17,8 +17,9 @@ int main()
     xrobot::gzSpawner gz_spawner;
     xrobot::Model model;
     bool success;
+    const char *filename = "../examples/gripper.xrobot";
 
-    success = parser.Load("../examples/gripper.xrobot", model);
+    success = parser.LoadParts(filename, model);
 
     if (success)
     {
@@ -49,7 +50,7 @@ int main()
     }
 
     xrobot::SpawnOptions options;
-    success = gz_spawner.PauseWorld() && gz_spawner.Spawn(model, options);
+    success = gz_spawner.PauseWorld() && gz_spawner.Spawn(model, filename, options);
 
     if (success)
     {

@@ -25,7 +25,7 @@ namespace xrobot
 
         bool ResumeWorld(std::string world = "");
 
-        bool Spawn(Model& model, const SpawnOptions& options = SpawnOptions());
+        bool Spawn(Model& model, const char *filename, const SpawnOptions& options = SpawnOptions());
 
     private:
 
