@@ -14,6 +14,7 @@ class Model
 {
 public:
 
+    std::string name;
     std::string geometryType;
     std::string geometryPath;
     double resolution;

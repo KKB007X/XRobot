@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <gz/sim/Entity.hh>
 
 namespace xrobot
 {
@@ -43,5 +44,7 @@ public:
     double initialRoll;
     double initialPitch;
     double initialYaw;
+
+    gz::sim::Entity entity = gz::sim::kNullEntity;
 };
 }

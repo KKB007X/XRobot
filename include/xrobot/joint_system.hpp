@@ -2,6 +2,7 @@
 
 #include <gz/sim/System.hh>
 #include <gz/sim/Model.hh>
+#include <gz/sim/Entity.hh>
 
 #include "xrobot/model.hpp"
 
@@ -29,5 +30,6 @@ private:
     Model model;
 
     bool loaded = false;
+
 };
 }

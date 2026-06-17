@@ -108,7 +108,7 @@ bool xrobot::gzSpawner::Spawn(xrobot::Model& model, const char *filename, const 
     std::stringstream sdf;
 
     sdf << "<sdf version='1.10'>";
-    sdf << "<model name='xrobot1'>";
+    sdf << "<model name='"<< model.name <<"'>";
 
     sdf << "<pose>"
         << options.x << " "
@@ -195,15 +195,14 @@ bool xrobot::gzSpawner::Spawn(xrobot::Model& model, const char *filename, const 
 
         sdf << "</link>";
     }
-    sdf << "</model>";
-
     sdf << "<plugin "
-    << "filename = \"libxrobot_joint_system.so\" "
-    << "name = \"xrobot::JointSystem\">"
-    << "<xrobot_file>"
-    << std::filesystem::absolute(filename).string()
-    << "</xrobot_file>"
-    << "</plugin>";
+        << "filename = \""<< std::filesystem::absolute("libxrobot_joint_system.so").string()
+        << "\" name = \"xrobot::JointSystem\">"
+        << "<xrobot_file>"
+        << std::filesystem::absolute(filename).string()
+        << "</xrobot_file>"
+        << "</plugin>";
+    sdf << "</model>";
 
     sdf << "</sdf>";
 

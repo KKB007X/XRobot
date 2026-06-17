@@ -23,6 +23,14 @@ add_executable(
     src/gz_spawner.cpp
 )
 
+add_library(
+    xrobot_joint_system
+    SHARED
+    src/joint_system.cpp
+    src/parser.cpp
+    src/model.cpp
+)
+
 target_link_libraries(
     xrobot
 
@@ -53,4 +61,11 @@ target_link_libraries(
     gz-sim8::gz-sim8
     gz-transport13::gz-transport13
     gz-msgs10::gz-msgs10
+)
+
+target_link_libraries(
+    xrobot_joint_system
+    PRIVATE
+    tinyxml2::tinyxml2
+    gz-sim8::gz-sim8
 )

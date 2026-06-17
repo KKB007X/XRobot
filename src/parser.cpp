@@ -53,6 +53,9 @@ bool xrobot::Parser::LoadParts(const char *filename, Model& model)
         << std::endl;
 
     const char *version = root->Attribute("version");
+    const char *name = root->Attribute("name");
+
+    model.name = name;
 
     if (version)
     {
@@ -208,6 +211,9 @@ bool xrobot::Parser::LoadJoints(const char *filename, Model& model)
         << std::endl;
 
     const char *version = root->Attribute("version");
+        const char *name = root->Attribute("name");
+
+    model.name = name;
 
     if (version)
     {
@@ -216,6 +222,29 @@ bool xrobot::Parser::LoadJoints(const char *filename, Model& model)
             << version
             << std::endl;
     }
+    for (
+        auto part = root->FirstChildElement("part");
+        part;
+        part = part->NextSiblingElement("part"))
+    {
+        const char *name = part->Attribute("name");
+
+        if (!name)
+        {
+            std::cout
+                << "Part missing name"
+                << std::endl;
+
+            return false;
+        }
+
+        auto newPart = std::make_unique<xrobot::Part>();
+
+        newPart->name = name;
+
+        model.AddPart(std::move(newPart));
+    }
+
 
     for (
         auto joint = root->FirstChildElement("joint");

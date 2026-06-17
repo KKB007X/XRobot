@@ -1,4 +1,4 @@
-<xrobot version="0.1">
+<xrobot version="0.1" name="xrobot10">
 
     <geometry type="step" path="../examples/simple_model.step" resolution = "0.00001"/>
 
@@ -8,29 +8,29 @@
     </part>
 
     <part name="Part2"
-    mass="1.0"
+    density="2700">
     </part>
 
     <joint
-        name="jR23"
+        name="j1"
         type="revolute"
 
-        parent="Base_link"
-        child="Part2"
+        parent="Part2"
+        child="Base_link"
 
         px="0"
         py="0"
-        pz="0.015"
+        pz="0.01"
 
         axisX="0"
-        axisY="0"
-        axisZ="1"
+        axisY="1"
+        axisZ="0"
 
-        kLinear="10000"
-        kAngular="10000"
+        kLinear="1000"
+        kAngular="1"
 
-        dLinear="100"
-        dAngular="100"
+        dLinear="10"
+        dAngular="0.001"
 
         linearTolerance="0.0001"
         angularTolerance="0.001"

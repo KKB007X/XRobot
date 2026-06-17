@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <gz/sim/Link.hh>
 
 namespace xrobot
 {
@@ -8,22 +9,22 @@ class Joint
 {
 public:
 
-    std::string name;
+    std::string name;//
 
-    std::string type;
+    std::string type;//
 
-    std::string control;
+    std::string control;//
 
-    std::string parent;
-    std::string child;
+    std::string parent;//
+    std::string child;//
 
-    double ppx;
-    double ppy;
-    double ppz;
+    double ppx;//
+    double ppy;//
+    double ppz;//
 
-    double paxisX;
-    double paxisY;
-    double paxisZ;
+    double paxisX;//
+    double paxisY;//
+    double paxisZ;//
     
     double cpx;
     double cpy;
@@ -38,21 +39,23 @@ public:
     double cqz;
     double cqw;
 
-    double kLinear;
-    double kAngular;
+    double kLinear;//
+    double kAngular;//
 
-    double linearTolerance;
-    double angularTolerance;
+    double linearTolerance;//
+    double angularTolerance;//
 
-    double lowerLimit;
-    double upperLimit;
+    double lowerLimit;//
+    double upperLimit;//
 
-    double speed;
-    double effort;
+    double speed;//
+    double effort;//
 
-    double dLinear;
-    double dAngular;
+    double dLinear;//
+    double dAngular;//
 
+    gz::sim::Link parentLink;
+    gz::sim::Link childLink;
 
 };
 }
