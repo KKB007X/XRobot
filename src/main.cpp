@@ -50,7 +50,7 @@ int main()
     }
 
     xrobot::SpawnOptions options;
-    success = gz_spawner.PauseWorld() && gz_spawner.Spawn(model, filename, options);// && gz_spawner.ResumeWorld();
+    success = gz_spawner.PauseWorld() && gz_spawner.Spawn(model, filename, options) && gz_spawner.ResumeWorld();
 
     if (success)
     {

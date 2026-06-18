@@ -31,5 +31,7 @@ private:
 
     bool loaded = false;
 
+    gz::transport::Node transport_node;
+
 };
 }

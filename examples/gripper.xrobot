@@ -13,7 +13,9 @@
 
     <joint
         name="j1"
-        type="revolute"
+        type="prismatic"
+
+        control="position"
 
         parent="Part2"
         child="Base_link"
@@ -22,20 +24,23 @@
         py="0"
         pz="0.01"
 
-        axisX="0"
-        axisY="1"
+        axisX="1"
+        axisY="0"
         axisZ="0"
 
-        kLinear="1000"
+        kLinear="10000"
         kAngular="1"
 
         dLinear="10"
-        dAngular="0.001"
+        dAngular="0.003"
 
         linearTolerance="0.0001"
         angularTolerance="0.001"
 
-        lowerLimit="-1.57"
-        upperLimit="1.57"
+        lowerLimit="0.0"
+        upperLimit="0.2"
+
+        speed="1.0"
+        effort="1"
     />
 </xrobot>

@@ -346,6 +346,10 @@ bool xrobot::Parser::LoadJoints(const char *filename, Model& model)
 
         newJoint->upperLimit = joint->DoubleAttribute("upperLimit", 0.0);
 
+        newJoint->speed = joint->DoubleAttribute("speed", 0.0);
+
+        newJoint->effort = joint->DoubleAttribute("effort", 0.0);
+
         std::cout
             << "Added joint: "
             << name

@@ -2,6 +2,8 @@
 
 #include <string>
 #include <gz/sim/Link.hh>
+#include <gz/transport/Node.hh>
+#include <atomic>
 
 namespace xrobot
 {
@@ -13,7 +15,8 @@ public:
 
     std::string type;//
 
-    std::string control;//
+    std::string control = "";//
+    std::atomic<double> target_cmd{0.0};
 
     std::string parent;//
     std::string child;//
@@ -34,11 +37,6 @@ public:
     double caxisY;
     double caxisZ;
 
-    double cqx;
-    double cqy;
-    double cqz;
-    double cqw;
-
     double kLinear;//
     double kAngular;//
 
@@ -56,6 +54,9 @@ public:
 
     gz::sim::Link parentLink;
     gz::sim::Link childLink;
+
+    gz::math::Vector3d pPerp;
+    gz::math::Vector3d cPerp;
 
 };
 }
